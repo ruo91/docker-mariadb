@@ -29,8 +29,13 @@ ENV DB_USER root
 ENV DB_PASS mariadb
 RUN sed -i 's/bind-address/\#bind-address/g' /etc/mysql/my.cnf && sed -i 's/\/var\/run\/mysqld\/mysqld.sock/\/tmp\/mysql.sock/g' /etc/mysql/my.cnf \
  && echo "#!/bin/bash" > /tmp/mariadb && echo "mysqld_safe &" >> /tmp/mariadb && echo "sleep 10" >> /tmp/mariadb \
- && echo "mysqladmin -u $DB_USER password '$DB_PASS'" >> /tmp/mariadb && mysql -u $DB_USER -p$DB_PASS -e 'GRANT ALL PRIVILEGES ON *.* TO \"root\"@\"%\";' >> /tmp/mariadb \
- && chmod a+x /tmp/mariadb && /tmp/mariadb && rm -f /tmp/mariadb
+ && echo "mysqladmin -u $DB_USER password '$DB_PASS'" >> /tmp/mariadb && chmod a+x /tmp/mariadb && /tmp/mariadb && rm -f /tmp/mariadb
+
+# Allow remote connection to MariaDB
+RUN echo '#!/bin/bash' > /tmp/allow-remote-connection.sh \
+ && echo "mysql -u $DB_USER -p$DB_PASS -e 'GRANT ALL PRIVILEGES ON *.* to \"$DB_USER\"@\"%\" IDENTIFIED BY \"$DB_PASS\";'" >> /tmp/allow-remote-connection.sh \
+ && echo "mysql -u $DB_USER -p$DB_PASS -e 'FLUSH PRIVILEGES;'" >> /tmp/allow-remote-connection.sh \
+ && chmod a+x /tmp/allow-remote-connection.sh
 
 # Supervisor
 RUN mkdir -p /var/log/supervisor
