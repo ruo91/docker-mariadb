@@ -44,10 +44,7 @@ RUN sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/my.cnf \
  && rm -f /tmp/mariadb
 
 # my.cnf
-RUN echo 'skip-external-locking' >> /etc/mysql/conf.d/mariadb.cnf \
- && echo 'skip-host-cache' >> /etc/mysql/conf.d/mariadb.cnf \
- && echo 'skip-locking' >> /etc/mysql/conf.d/mariadb.cnf \
- && echo 'skip-name-resolve' >> /etc/mysql/conf.d/mariadb.cnf
+RUN echo 'skip-name-resolve' >> /etc/mysql/conf.d/mariadb.cnf
 
 # Supervisor
 RUN mkdir -p /var/log/supervisor
